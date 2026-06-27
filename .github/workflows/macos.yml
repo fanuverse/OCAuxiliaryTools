@@ -18,7 +18,8 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: macos-latest
+    # Explicitly run on macOS 15 (Sequoia)
+    runs-on: macos-15
     strategy:
       matrix:
         include:
@@ -48,8 +49,8 @@ jobs:
       - name: macos-build
         id: build
         run: |
-          # macOS 26/Tahoe SDK and newer removed AGL.framework.
-          # We strip any references to it from Qt configuration files and the generated Makefiles.
+          # Strip references to the removed AGL framework from Qt configuration files and the generated Makefiles.
+          # This allows Qt 5.15.2 to compile successfully on macOS Sequoia.
           if [ -d "./Qt" ]; then
             find ./Qt -type f \( -name "*.pri" -o -name "*.conf" \) -exec sed -i '' 's/-framework AGL//g' {} +
           fi
